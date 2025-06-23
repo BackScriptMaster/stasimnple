@@ -48,7 +48,7 @@
                 </a>
                 <a href="{{ route('trader.orders') }}"
                    class="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Ver ordenes de trade</a>
+                    Ver Órdenes Pendientes</a>
             </div>
         </div>
 
@@ -147,7 +147,7 @@
                 </a>
                 <a href="{{ route('trader.orders') }}"
                    class="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Ver ordenes de trade</a>
+                    Ver Órdenes Pendientes</a>
             </div>
         </div>
 
