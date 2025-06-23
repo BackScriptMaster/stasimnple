@@ -11,6 +11,11 @@
         </div>
     @endif
 
+    <!-- Moneda local destacada -->
+    <div class="mb-6 text-center">
+        <span class="text-2xl font-bold text-blue-600 bg-blue-100 px-4 py-2 rounded">Moneda Local: BOB</span>
+    </div>
+
     <!-- Contenido según el rol -->
     @if ($userRole === 'admin')
         <!-- Vista para administradores -->
@@ -28,14 +33,10 @@
         <!-- Vista para traders -->
         <div class="mb-12 bg-white shadow-sm rounded-lg p-6">
             <h2 class="text-lg font-medium text-gray-900">Panel de Trader</h2>
-            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-Ist das korrekt?4">
+            <div class="mt-4 grid grid-cols-1 gap-4">
                 <div>
                     <p class="text-sm text-gray-500">Saldo USDT</p>
                     <p class="text-gray-900">{{ number_format($balance->usdt_balance, 8) }} USDT</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500">Saldo Local</p>
-                    <p class="text-gray-900">{{ number_format($balance->local_balance, 2) }} {{ $balance->local_currency }}</p>
                 </div>
             </div>
             <div class="mt-6">
@@ -48,7 +49,8 @@
                 </a>
                 <a href="{{ route('trader.orders') }}"
                    class="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Ver Órdenes Pendientes</a>
+                    Ver órdenes de trade
+                </a>
             </div>
         </div>
 
@@ -61,7 +63,6 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compra</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Venta</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Moneda</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mínimo</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Máximo</th>
                         </tr>
@@ -71,7 +72,6 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ number_format($coin->buy_price, 2) }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ number_format($coin->sell_price, 2) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $coin->local_currency }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ number_format($coin->min_amount, 8) }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ number_format($coin->max_amount, 8) }}</td>
                             </tr>
@@ -92,7 +92,6 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto USDT</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Local</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
                         </tr>
@@ -102,7 +101,6 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $order->type === 'buy' ? 'Compra' : 'Venta' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ number_format($order->usdt_amount, 8) }} USDT</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ number_format($order->local_amount, 2) }} {{ $order->local_currency }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $order->status === 'pending' ? 'Pendiente' : ($order->status === 'confirmed' ? 'Pago Confirmado' : ($order->status === 'proof_uploaded' ? 'Comprobante Subido' : ($order->status === 'queued' ? 'En Cola' : ($order->status === 'completed' ? 'Completada' : 'En Disputa')))) }}
                                 </td>
@@ -122,14 +120,10 @@
         <!-- Vista para usuarios regulares -->
         <div class="mb-12 bg-white shadow-sm rounded-lg p-6">
             <h2 class="text-lg font-medium text-gray-900">Balance</h2>
-            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="mt-4 grid grid-cols-1 gap-4">
                 <div>
                     <p class="text-sm text-gray-500">Saldo USDT</p>
                     <p class="text-gray-900">{{ number_format($balance->usdt_balance, 8) }} USDT</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500">Saldo Local</p>
-                    <p class="text-gray-900">{{ number_format($balance->local_balance, 2) }} {{ $balance->local_currency }}</p>
                 </div>
             </div>
             <div class="mt-6">
@@ -147,7 +141,8 @@
                 </a>
                 <a href="{{ route('trader.orders') }}"
                    class="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Ver Órdenes Pendientes</a>
+                    Ver órdenes de trade
+                </a>
             </div>
         </div>
 
@@ -160,7 +155,6 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto USDT</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto Local</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
                         </tr>
@@ -170,7 +164,6 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $order->type === 'buy' ? 'Compra' : 'Venta' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ number_format($order->usdt_amount, 8) }} USDT</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ number_format($order->local_amount, 2) }} {{ $order->local_currency }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $order->status === 'pending' ? 'Pendiente' : ($order->status === 'confirmed' ? 'Pago Confirmado' : ($order->status === 'proof_uploaded' ? 'Comprobante Subido' : ($order->status === 'queued' ? 'En Cola' : ($order->status === 'completed' ? 'Completada' : 'En Disputa')))) }}
                                 </td>
@@ -188,89 +181,84 @@
         </div>
     @endif
 
-<!-- Modal para registrarse como trader -->
-<x-modal wire:model.live="showModalRegisterTrader" max-width="lg">
-    <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900">Registrarse como Trader</h2>
-        <p class="mt-1 text-sm text-gray-600">
-            Completa los detalles para registrarte como trader y crear tu primera oferta.
-        </p>
+    <!-- Modal para registrarse como trader -->
+    <x-modal wire:model.live="showModalRegisterTrader" max-width="lg">
+        <div class="p-6">
+            <h2 class="text-lg font-medium text-gray-900">Registrarse como Trader</h2>
+            <p class="mt-1 text-sm text-gray-600">
+                Completa los detalles para registrarte como trader y crear tu primera oferta. La moneda local es <span class="font-bold text-blue-600">BOB (Bolivianos)</span>.
+            </p>
 
-        <form wire:submit.prevent="registerAsTrader" class="mt-6 space-y-4">
-            @if ($errors->has('form_error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    {{ $errors->first('form_error') }}
+            <form wire:submit.prevent="registerAsTrader" class="mt-6 space-y-4">
+                @if ($errors->has('form_error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {{ $errors->first('form_error') }}
+                    </div>
+                @endif
+                <div>
+                    <x-label for="buy_price" value="Precio de Compra (USDT)" />
+                    <x-input wire:model.live="buy_price" id="buy_price" type="number" step="0.01" class="mt-1 block w-full" required />
+                    @error('buy_price') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
                 </div>
-            @endif
-            <div>
-                <x-label for="buy_price" value="Precio de Compra (USDT)" />
-                <x-input wire:model.live="buy_price" id="buy_price" type="number" step="0.01" class="mt-1 block w-full" required />
-                @error('buy_price') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
-            <div>
-                <x-label for="sell_price" value="Precio de Venta (USDT)" />
-                <x-input wire:model.live="sell_price" id="sell_price" type="number" step="0.01" class="mt-1 block w-full" required />
-                @error('sell_price') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
-            <div>
-                <x-label for="local_currency" value="Moneda Local" />
-                <x-input wire:model.live="local_currency" id="local_currency" type="text" class="mt-1 block w-full" required oninput="this.value = this.value.toUpperCase()" />
-                @error('local_currency') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
-            <div>
-                <x-label for="min_amount" value="Monto Mínimo (USDT)" />
-                <x-input wire:model.live="min_amount" id="min_amount" type="number" step="0.01" class="mt-1 block w-full" required />
-                @error('min_amount') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
-            <div>
-                <x-label for="max_amount" value="Monto Máximo (USDT)" />
-                <x-input wire:model.live="max_amount" id="max_amount" type="number" step="0.01" class="mt-1 block w-full" required />
-                @error('max_amount') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
-
-            <div class="flex items-center gap-4">
-                <x-button type="submit" wire:loading.attr="disabled">
-                    <span wire:loading wire:target="registerAsTrader">Procesando...</span>
-                    <span wire:loading.remove wire:target="registerAsTrader">Regístrame</span>
-                </x-button>
-                <x-secondary-button wire:click="closeModal">
-                    Cancelar
-                </x-secondary-button>
-            </div>
-        </form>
-    </div>
-</x-modal>
-
-<!-- Modal para depósito -->
-<x-modal wire:model.live="showModalDeposit" max-width="sm">
-    <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900">Depositar USDT</h2>
-        <p class="mt-1 text-sm text-gray-600">
-            Ingresa la cantidad de USDT que deseas depositar (simulación).
-        </p>
-
-        <form wire:submit.prevent="deposit" class="mt-6 space-y-4">
-            @if ($errors->has('form_error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    {{ $errors->first('form_error') }}
+                <div>
+                    <x-label for="sell_price" value="Precio de Venta (USDT)" />
+                    <x-input wire:model.live="sell_price" id="sell_price" type="number" step="0.01" class="mt-1 block w-full" required />
+                    @error('sell_price') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
                 </div>
-            @endif
-            <div>
-                <x-label for="deposit_amount" value="Cantidad (USDT)" />
-                <x-input wire:model.live="deposit_amount" id="deposit_amount" type="number" step="0.00000001" class="mt-1 block w-full" required />
-                @error('deposit_amount') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
-            </div>
+                <div>
+                    <x-label for="min_amount" value="Monto Mínimo (USDT)" />
+                    <x-input wire:model.live="min_amount" id="min_amount" type="number" step="0.01" class="mt-1 block w-full" required />
+                    @error('min_amount') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                </div>
+                <div>
+                    <x-label for="max_amount" value="Monto Máximo (USDT)" />
+                    <x-input wire:model.live="max_amount" id="max_amount" type="number" step="0.01" class="mt-1 block w-full" required />
+                    @error('max_amount') <span class="mt-2 text-sm text-red-600">{{ $message }}</.</span> @enderror
+                </div>
 
-            <div class="flex items-center gap-4">
-                <x-button type="submit" wire:loading.attr="disabled">
-                    <span wire:loading wire:target="deposit">Procesando...</span>
-                    <span wire:loading.remove wire:target="deposit">Confirmar</span>
-                </x-button>
-                <x-secondary-button wire:click="closeModal">
-                    Cancelar
-                </x-secondary-button>
-            </div>
-        </form>
-    </div>
-</x-modal>
+                <div class="flex items-center gap-4">
+                    <x-button type="submit" wire:loading.attr="disabled">
+                        <span wire:loading wire:target="registerAsTrader">Procesando...</span>
+                        <span wire:loading.remove wire:target="registerAsTrader">Regístrame</span>
+                    </x-button>
+                    <x-secondary-button wire:click="closeModal">
+                        Cancelar
+                    </x-secondary-button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
+
+    <!-- Modal para depósito -->
+    <x-modal wire:model.live="showModalDeposit" max-width="sm">
+        <div class="p-6">
+            <h2 class="text-lg font-medium text-gray-900">Depositar USDT</h2>
+            <p class="mt-1 text-sm text-gray-600">
+                Ingresa la cantidad de USDT que deseas depositar (simulación).
+            </p>
+
+            <form wire:submit.prevent="deposit" class="mt-6 space-y-4">
+                @if ($errors->has('form_error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        {{ $errors->first('form_error') }}
+                    </div>
+                @endif
+                <div>
+                    <x-label for="deposit_amount" value="Cantidad (USDT)" />
+                    <x-input wire:model.live="deposit_amount" id="deposit_amount" type="number" step="0.00000001" class="mt-1 block w-full" required />
+                    @error('deposit_amount') <span class="mt-2 text-sm text-red-600">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <x-button type="submit" wire:loading.attr="disabled">
+                        <span wire:loading wire:target="deposit">Procesando...</span>
+                        <span wire:loading.remove wire:target="deposit">Confirmar</span>
+                    </x-button>
+                    <x-secondary-button wire:click="closeModal">
+                        Cancelar
+                    </x-secondary-button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
 </div>
