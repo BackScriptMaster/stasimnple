@@ -46,6 +46,9 @@
                    class="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                     Ver Mercado P2P
                 </a>
+                <a href="{{ route('trader.orders') }}"
+                   class="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Ver ordenes de trade</a>
             </div>
         </div>
 
@@ -142,6 +145,9 @@
                    class="ml-4 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
                     Ir al Mercado P2P
                 </a>
+                <a href="{{ route('trader.orders') }}"
+                   class="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Ver ordenes de trade</a>
             </div>
         </div>
 
@@ -182,7 +188,7 @@
         </div>
     @endif
 
-    <!-- Modal para registrarse como trader -->
+<!-- Modal para registrarse como trader -->
 <x-modal wire:model.live="showModalRegisterTrader" max-width="lg">
     <div class="p-6">
         <h2 class="text-lg font-medium text-gray-900">Registrarse como Trader</h2>

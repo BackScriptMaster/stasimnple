@@ -15,7 +15,6 @@ class Orders extends Component
 
     public function mount()
     {
-        // Cargar órdenes donde el usuario es el trader (vendedor o comprador)
         $this->orders = Order::where('seller_id', auth()->id())
             ->orWhere('buyer_id', auth()->id())
             ->with(['buyer', 'seller', 'coin'])
@@ -35,7 +34,6 @@ class Orders extends Component
             ->firstOrFail();
         $this->showOrderModal = true;
 
-        // Registrar en logs
         Log::create([
             'user_id' => auth()->id(),
             'loggable_type' => Order::class,
@@ -53,27 +51,37 @@ class Orders extends Component
             return;
         }
 
-        // Actualizar balances
         $buyer = $this->selectedOrder->buyer;
         $seller = $this->selectedOrder->seller;
         $buyerBalance = $buyer->balance;
         $sellerBalance = $seller->balance;
 
+        // Verificar saldo suficiente
+        if ($this->selectedOrder->type === 'buy') {
+            // Trader (vendedor) envía USDT
+            if ($sellerBalance->usdt_balance < $this->selectedOrder->usdt_amount) {
+                session()->flash('error', 'El vendedor no tiene suficiente saldo USDT.');
+                return;
+            }
+        } else {
+            // Usuario (vendedor) envía USDT
+            if ($sellerBalance->usdt_balance < $this->selectedOrder->usdt_amount) {
+                session()->flash('error', 'No tienes suficiente saldo USDT para completar esta transacción.');
+                return;
+            }
+        }
+
+        // Actualizar balances
         if ($this->selectedOrder->type === 'buy') {
             // Comprador recibe USDT, vendedor recibe moneda local
             $buyerBalance->usdt_balance += $this->selectedOrder->usdt_amount;
             $sellerBalance->local_balance += $this->selectedOrder->local_amount;
             $sellerBalance->usdt_balance -= $this->selectedOrder->usdt_amount;
         } else {
-            // Vendedor recibe USDT, comprador recibe moneda local
-            $sellerBalance->usdt_balance += $this->selectedOrder->usdt_amount;
-            $buyerBalance->local_balance += $this->selectedOrder->local_amount;
-            $buyerBalance->usdt_balance -= $this->selectedOrder->usdt_amount;
-        }
-
-        if ($sellerBalance->usdt_balance < 0) {
-            session()->flash('error', 'No tienes suficiente saldo USDT para completar esta transacción.');
-            return;
+            // Vendedor envía USDT, recibe moneda local; comprador recibe USDT
+            $sellerBalance->usdt_balance -= $this->selectedOrder->usdt_amount;
+            $sellerBalance->local_balance += $this->selectedOrder->local_amount;
+            $buyerBalance->usdt_balance += $this->selectedOrder->usdt_amount;
         }
 
         // Guardar balances
@@ -98,7 +106,6 @@ class Orders extends Component
             ],
         ]);
 
-        // Actualizar lista de órdenes
         $this->orders = $this->orders->filter(fn($order) => $order->id !== $this->selectedOrder->id);
         $this->showOrderModal = false;
         session()->flash('message', 'Orden completada exitosamente.');
@@ -114,7 +121,6 @@ class Orders extends Component
         $this->selectedOrder->status = 'disputed';
         $this->selectedOrder->save();
 
-        // Registrar en logs
         Log::create([
             'user_id' => auth()->id(),
             'loggable_type' => Order::class,
@@ -124,12 +130,9 @@ class Orders extends Component
             'changes' => ['status' => ['old' => 'proof_uploaded', 'new' => 'disputed']],
         ]);
 
-        // Actualizar lista de órdenes
         $this->orders = $this->orders->filter(fn($order) => $order->id !== $this->selectedOrder->id);
         $this->showOrderModal = false;
         session()->flash('message', 'Error reportado. La orden está ahora en disputa.');
-
-        // Reiniciar la orden seleccionada
         $this->selectedOrder = null;
     }
 

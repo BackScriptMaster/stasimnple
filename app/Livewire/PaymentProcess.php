@@ -50,7 +50,7 @@ class PaymentProcess extends Component
             'loggable_type' => Order::class,
             'loggable_id' => $this->order->id,
             'action' => 'confirmed_transaction',
-            'description' => 'Usuario ' . auth()->id() . ' confirmó el envío/recepción del pago para la orden ' . $this->order->id,
+            'description' => 'Usuario ' . auth()->id() . ' confirmó ' . ($this->order->buyer_id === auth()->id() ? 'el envío del pago' : 'la recepción del pago') . ' para la orden ' . $this->order->id,
             'changes' => ['status' => ['old' => 'queued', 'new' => 'confirmed']],
         ]);
 
@@ -86,7 +86,7 @@ class PaymentProcess extends Component
             'changes' => ['voucher_path' => $this->order->voucher_path, 'status' => ['old' => 'confirmed', 'new' => 'proof_uploaded']],
         ]);
 
-        session()->flash('message', 'Comprobante subido exitosamente. La orden está lista para la revisión del trader.');
+        session()->flash('message', 'Comprobante subido correctamente. Espera la revisión del trader.');
     }
 
     public function openStatusModal()

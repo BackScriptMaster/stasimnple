@@ -31,22 +31,17 @@ class Tradep2p extends Component
 
     public function mount()
     {
-        // Cargar todos los usuarios con rol trader
         $this->traders = User::role('trader')->with('balance', 'coins')->get();
     }
 
     public function viewTraderOffers($traderId)
     {
-        // Verificar que el trader exista
         $trader = User::role('trader')->findOrFail($traderId);
-
-        // Cargar ofertas activas
         $this->selectedTraderId = $traderId;
         $this->selectedTraderOffers = Coin::where('user_id', $traderId)
             ->where('status', 'active')
             ->get();
 
-        // Registrar en logs
         Log::create([
             'user_id' => auth()->id(),
             'loggable_type' => User::class,
@@ -56,11 +51,10 @@ class Tradep2p extends Component
             'changes' => ['trader_name' => $trader->name],
         ]);
 
-        // Abrir modal
         $this->showOffersModal = true;
     }
 
-    public function openOrderModal($coinId)
+    public function openOrderModal($coinId, $type)
     {
         $coin = Coin::where('id', $coinId)->where('status', 'active')->firstOrFail();
         $this->selectedCoinId = $coinId;
@@ -70,12 +64,15 @@ class Tradep2p extends Component
         $this->sell_price = $coin->sell_price;
         $this->local_currency = $coin->local_currency;
         $this->usdt_amount = null;
-        $this->type = 'buy';
+        $this->type = $type;
         $this->showOrderModal = true;
     }
 
     public function startOrder()
     {
+        $coin = Coin::findOrFail($this->selectedCoinId);
+        $trader = User::findOrFail($this->selectedTraderId);
+
         // Validar monto
         $this->validate([
             'usdt_amount' => [
@@ -86,13 +83,10 @@ class Tradep2p extends Component
             ],
         ]);
 
-        $coin = Coin::findOrFail($this->selectedCoinId);
-        $trader = User::findOrFail($this->selectedTraderId);
-
-        // Verificar balance del vendedor
+        // Verificar saldo del vendedor
         $seller = $this->type === 'buy' ? $trader : auth()->user();
         if ($seller->balance->usdt_balance < $this->usdt_amount) {
-            session()->flash('error', 'El vendedor no tiene suficiente saldo USDT para esta transacción.');
+            session()->flash('error', 'El ' . ($this->type === 'buy' ? 'trader' : 'usuario') . ' no tiene suficiente saldo USDT.');
             return;
         }
 
@@ -109,10 +103,9 @@ class Tradep2p extends Component
             'local_amount' => $local_amount,
             'local_currency' => $coin->local_currency,
             'type' => $this->type,
-            'status' => 'queued', // Estado inicial para transacciones con traders
+            'status' => 'queued',
         ]);
 
-        // Registrar en logs
         Log::create([
             'user_id' => auth()->id(),
             'loggable_type' => Order::class,
@@ -122,11 +115,9 @@ class Tradep2p extends Component
             'changes' => $order->toArray(),
         ]);
 
-        // Cerrar modales
         $this->showOrderModal = false;
         $this->showOffersModal = false;
 
-        // Redirigir a payment.process con datetime
         $datetime = $order->created_at->format('YmdHis');
         return redirect()->route('payment.process', ['datetime' => $datetime])
             ->with('message', 'Orden puesta en cola exitosamente. Espera la confirmación del trader.');

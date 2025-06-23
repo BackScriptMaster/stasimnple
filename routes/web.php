@@ -25,5 +25,5 @@ Route::middleware([
 
     Route::get('/payment_process/{datetime}', PaymentProcess::class)->name('payment.process');
 
-    Route::get('/trader/orders', Orders::class)->name('trader.orders');
+    Route::get('/trade/orders', Orders::class)->name('trader.orders');
 });

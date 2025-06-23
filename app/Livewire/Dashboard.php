@@ -92,12 +92,14 @@ class Dashboard extends Component
         $this->showModalDeposit = true;
     }
 
-   public function closeModal()
-{
-    $this->showModalRegisterTrader = false;
-    $this->showModalDeposit = false;
-    $this->reset(['buy_price', 'sell_price', 'local_currency', 'min_amount', 'max_amount', 'deposit_amount']);
-}
+
+
+    public function closeModal()
+    {
+        $this->showModalRegisterTrader = false;
+        $this->showModalDeposit = false;
+        $this->reset(['buy_price', 'sell_price', 'local_currency', 'min_amount', 'max_amount', 'deposit_amount']);
+    }
 
     public function registerAsTrader()
     {
@@ -105,14 +107,16 @@ class Dashboard extends Component
         if ($this->balance->usdt_balance < 10) {
             session()->flash('error', 'Necesitas al menos 10 USDT para registrarte como trader.');
             $this->showModalRegisterTrader = false;
+
             return;
         }
+
 
         // Normalizar moneda
         $this->local_currency = strtoupper(trim($this->local_currency));
 
-        try {
-            $this->validate();
+       
+            //$this->validate();
 
             // Crear oferta
             $coin = Coin::create([
@@ -125,6 +129,7 @@ class Dashboard extends Component
                 'status' => 'active',
             ]);
 
+
             // Registrar log
             Log::create([
                 'user_id' => auth()->id(),
@@ -134,6 +139,7 @@ class Dashboard extends Component
                 'description' => 'Oferta creada por el usuario ' . auth()->id(),
                 'changes' => $coin->toArray(),
             ]);
+
 
             // Asignar rol trader
             auth()->user()->assignRole('trader');
@@ -147,27 +153,14 @@ class Dashboard extends Component
                 'description' => 'Rol trader asignado al usuario ' . auth()->id(),
                 'changes' => ['roles' => auth()->user()->getRoleNames()->toArray()],
             ]);
+        //dd("dentro de registerAsTrader - Registrar log de rol");
 
             // Actualizar rol
             $this->userRole = 'trader';
             $this->showModalRegisterTrader = false;
 
             session()->flash('message', '¡Registrado como trader! Tu oferta está activa.');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            foreach ($e->errors() as $field => $messages) {
-                $this->addError($field, $messages[0]);
-            }
-            LaravelLog::error('Validación fallida en registerAsTrader', [
-                'user_id' => auth()->id(),
-                'errors' => $e->errors(),
-            ]);
-        } catch (\Exception $e) {
-            $this->addError('form_error', 'Error al registrarte. Intenta nuevamente.');
-            LaravelLog::error('Error en registerAsTrader', [
-                'user_id' => auth()->id(),
-                'message' => $e->getMessage(),
-            ]);
-        }
+       
     }
 
     public function deposit()
