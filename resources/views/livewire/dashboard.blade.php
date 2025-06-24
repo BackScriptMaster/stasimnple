@@ -10,7 +10,6 @@
             {{ session('error') }}
         </div>
     @endif
-
     <!-- Moneda local destacada -->
     <div class="mb-6 text-center">
         <span class="text-2xl font-bold text-blue-600 bg-blue-100 px-4 py-2 rounded">Moneda Local: BOB</span>
